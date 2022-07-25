@@ -1,13 +1,19 @@
-from machine import Pin, UART, sleep
+import time
+from rotary_irq_esp import RotaryIRQ
 
-# setup p12 and p14 as input
-p12 = Pin(12, Pin.IN, Pin.PULL_UP)
-p14 = Pin(14, Pin.IN, Pin.PULL_UP)
-# setup serial
-serial = UART(1, 9600)
-serial.init(9600, 8, None, 1)
+r = RotaryIRQ(pin_num_clk=12,
+              pin_num_dt=14,
+              min_val=0,
+              max_val=5000,
+              reverse=False,
+              range_mode=RotaryIRQ.RANGE_UNBOUNDED)
 
-def test():
-    while True:
-        print(p12.value(), " ", p14.value())
-        sleep(0.1)
+val_old = r.value()
+while True:
+    val_new = r.value()
+
+    if val_old != val_new:
+        val_old = val_new
+        print('result =', val_new)
+
+    time.sleep_ms(50)
